@@ -17,23 +17,72 @@ const BookList2 = ({ books }: { books: BookI[] }) => {
   const [selectedFilter, setSelectedFilter] = useState(filter ? filter : "all");
 
   const [filteredBooks, setFilteredBooks] = useState<BookI[]>(books);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [debouncedStorageTerm, setDebouncedStorageTerm] = useState("");
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
+  // Load search history from local storage when the component mounts
   useEffect(() => {
-    if (selectedFilter === "all") {
-      setFilteredBooks(books);
-    } else {
-      setFilteredBooks(
-        books.filter(
-          (book) => book.genreId.name.toLowerCase() === selectedFilter,
-        ),
+    const savedHistory = localStorage.getItem("searchHistory");
+    if (savedHistory) {
+      setSearchHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
+  // Debounce search term updates
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setDebouncedStorageTerm(searchTerm);
+    }, 300); // 300ms delay for both search and storage debouncing
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  // Update filtered books whenever selected filter or debounced search term changes
+  useEffect(() => {
+    let filtered = books;
+
+    if (selectedFilter !== "all") {
+      filtered = filtered.filter(
+        (book) => book.genreId.name.toLowerCase() === selectedFilter
       );
     }
-  }, [selectedFilter, books]);
+
+    if (debouncedSearchTerm) {
+      filtered = filtered.filter((book) =>
+        book.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredBooks(filtered);
+  }, [selectedFilter, debouncedSearchTerm, books]);
+
+  // Update local storage search history when debouncedStorageTerm changes
+  useEffect(() => {
+    if (debouncedStorageTerm) {
+      const updatedHistory = [
+        debouncedStorageTerm,
+        ...searchHistory.filter((term) => term !== debouncedStorageTerm),
+      ].slice(0, 5);
+      setSearchHistory(updatedHistory);
+      localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
+    }
+  }, [debouncedStorageTerm]);
+
+  // Handle search term input
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center text-center">
       <h1 className="text-2xl font-bold">All Books</h1>
 
+      {/* Filter Buttons */}
       <div className="mb-4">
         {filterOptions.map((option) => (
           <button
@@ -50,6 +99,35 @@ const BookList2 = ({ books }: { books: BookI[] }) => {
         ))}
       </div>
 
+      {/* Search Bar */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search by title..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="p-2 border rounded-md text-black dark:text-white bg-zinc-100 dark:bg-zinc-800"
+        />
+        {/* Search History Dropdown */}
+        {searchHistory.length > 0 && (
+          <div className="mt-2 p-2 border rounded-md bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white">
+            <h3 className="text-sm font-bold mb-1">Search History:</h3>
+            <ul>
+              {searchHistory.map((term, index) => (
+                <li
+                  key={index}
+                  className="cursor-pointer hover:underline"
+                  onClick={() => setSearchTerm(term)}
+                >
+                  {term}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Book List */}
       {filteredBooks.map((b: BookI) => (
         <Book key={b._id} b={b} />
       ))}

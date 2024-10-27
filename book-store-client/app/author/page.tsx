@@ -3,7 +3,7 @@
 import { Author } from "@/components/Book";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
-import React, { useEffect } from "react";
+import React from "react";
 import useSWR from "swr";
 
 const getAuthors = async (url: string) => {
