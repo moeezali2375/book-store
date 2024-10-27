@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Book, { BookI } from "@/components/Book";
+import { useSearchParams } from "next/navigation";
 
 const BookList = ({ books }: { books: BookI[] }) => {
   const filterOptions = [
@@ -11,8 +12,9 @@ const BookList = ({ books }: { books: BookI[] }) => {
     { label: "Romance", value: "romance" },
     { label: "Adventure", value: "adventure" },
   ];
-
-  const [selectedFilter, setSelectedFilter] = useState("all");
+  const searchParams = useSearchParams();
+  const filter=searchParams.get('filter');
+  const [selectedFilter, setSelectedFilter] = useState(filter?filter:"all");
 
   const [filteredBooks, setFilteredBooks] = useState<BookI[]>(books);
 

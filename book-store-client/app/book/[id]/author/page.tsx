@@ -3,6 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import axios from "axios";
 import React from "react";
 
+// NOTE: For URL not found in generateStaticParams
+export const dynamicParams=true;
+
 export const generateStaticParams = async () => {
   const res = await axios.get("http://localhost:4000/book");
   const featuredBooks = res.data.books.filter((b: BookI) => b.rating > 4.5);
