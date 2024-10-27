@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { Button } from "./ui/button";
 
 export interface Genre {
   _id: string;
@@ -27,10 +28,7 @@ export interface BookI {
 
 const Book: React.FC<{ b: BookI }> = ({ b }) => {
   return (
-    <Link
-      href={`/book/${b._id}`}
-      className="border rounded-lg shadow-lg p-4 m-4 max-w-sm"
-    >
+    <div className="border rounded-lg shadow-lg p-4 m-4 max-w-sm">
       <h2 className="text-xl font-bold mb-2">{b.title}</h2>
       <p className="text-gray-700 mb-2">
         <strong>Author: </strong> {b.authorId.name}
@@ -47,7 +45,10 @@ const Book: React.FC<{ b: BookI }> = ({ b }) => {
       <p className="text-gray-700 mb-2">
         <strong>Rating:</strong> {b.rating} / 5
       </p>
-    </Link>
+      <Link href={`/book/${b._id}`}>
+        <Button variant={"ghost"}>View Details</Button>
+      </Link>
+    </div>
   );
 };
 

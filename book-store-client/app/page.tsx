@@ -7,7 +7,6 @@ export const revalidate = 30;
 export default async function Home() {
   const res = await axios.get("http://localhost:4000/book");
   const featuredBooks = res.data.books.filter((b: BookI) => b.rating > 4.5);
-  console.log("Hello");
   return (
     <div className="flex flex-col items-center justify-center text-center">
       <Navigator endpoint={"/genre"} desc={"Genre Page"} />
