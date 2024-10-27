@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Book, { BookI } from "@/components/Book";
 import { useSearchParams } from "next/navigation";
 
-const BookList = ({ books }: { books: BookI[] }) => {
+const BookList2 = ({ books }: { books: BookI[] }) => {
   const filterOptions = [
     { label: "All", value: "all" },
     { label: "Fiction", value: "fiction" },
@@ -13,8 +13,8 @@ const BookList = ({ books }: { books: BookI[] }) => {
     { label: "Adventure", value: "adventure" },
   ];
   const searchParams = useSearchParams();
-  const filter=searchParams.get('filter');
-  const [selectedFilter, setSelectedFilter] = useState(filter?filter:"all");
+  const filter = searchParams.get("filter");
+  const [selectedFilter, setSelectedFilter] = useState(filter ? filter : "all");
 
   const [filteredBooks, setFilteredBooks] = useState<BookI[]>(books);
 
@@ -54,6 +54,14 @@ const BookList = ({ books }: { books: BookI[] }) => {
         <Book key={b._id} b={b} />
       ))}
     </div>
+  );
+};
+
+const BookList = ({ books }: { books: BookI[] }) => {
+  return (
+    <Suspense>
+      <BookList2 books={books} />
+    </Suspense>
   );
 };
 

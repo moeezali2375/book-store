@@ -8,6 +8,7 @@ export interface GenreI {
   name: string;
   __v: number;
 }
+export const dynamic="force-dynamic";
 const Genre =async () => {
   const res =await axios.get("http://localhost:4000/genre");
   const genres: GenreI[] = res.data.genres;
